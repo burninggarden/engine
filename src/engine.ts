@@ -50,8 +50,6 @@ class Engine {
 	}
 
 	private handleAction(action: BaseAction) : void {
-		console.log(this.getStore().getState());
-
 		this.getSystems().forEach(system => {
 			system.handleAction(action);
 		});

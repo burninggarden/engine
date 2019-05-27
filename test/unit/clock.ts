@@ -34,7 +34,7 @@ Tap.test('.stop() cancels a queued clock update', test => {
 		}
 
 		protected performClockUpdate(): void {
-			test.notOk('Received expected update');
+			test.notOk('Received unexpected update');
 			test.end();
 		}
 

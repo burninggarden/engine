@@ -1,8 +1,8 @@
 
-function updateItem<T extends object>(item: T, attributes: Partial<T>) : T {
+function updateItem<T>(item: T, attributes: Partial<T>) : T {
 	return {
-		...(item as object),
-		...(attributes as object)
+		...item,
+		...attributes
 	} as T;
 }
 
