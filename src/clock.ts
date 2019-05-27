@@ -1,11 +1,11 @@
-import System from 'system';
+import BaseSystem from 'systems/base';
 
 class Clock {
 
 	private running        : boolean = false;
 	private last_tick_time : number = 0;
 	private timer          : null | number | NodeJS.Timer;
-	private systems        : System[];
+	private systems        : BaseSystem[];
 	private tick_rate      : number = 10;
 
 	public constructor() {
@@ -30,7 +30,7 @@ class Clock {
 		this.cancelNextTick();
 	}
 
-	public addSystem(system: System) : void {
+	public addSystem(system: BaseSystem) : void {
 		return void this.getSystems().push(system);
 	}
 
@@ -43,16 +43,18 @@ class Clock {
 	}
 
 	private tick() : void {
-		const
-			now                  = Date.now(),
-			elapsed_milliseconds = now - this.getLastTickTime();
+		const milliseconds = this.getMillisecondsSinceLastTick();
 
 		this.getSystems().forEach((system) => {
-			system.tick(elapsed_milliseconds);
+			system.tick(milliseconds);
 		});
 
-		this.setLastTickTime(now);
+		this.setLastTickTime(Date.now());
 		this.queueNextTick();
+	}
+
+	private getMillisecondsSinceLastTick() : number {
+		return Date.now() - this.getLastTickTime();
 	}
 
 	private getLastTickTime() : number {
@@ -79,10 +81,7 @@ class Clock {
 		clearTimeout(this.timer as number);
 	}
 
-	/**
-	 * @returns {Game_System[]}
-	 */
-	private getSystems() {
+	private getSystems() : BaseSystem[] {
 		if (!this.systems) {
 			this.systems = [ ];
 		}

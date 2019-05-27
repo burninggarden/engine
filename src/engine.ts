@@ -6,16 +6,38 @@
  *  - Stallman
  */
 
-import Clock  from 'clock';
-import System from 'system';
+import Clock      from 'clock';
+import Redux      from 'redux';
+import Reducers   from 'reducers';
+import BaseSystem from 'systems/base';
+import BaseAction from 'actions/base';
+
+import {
+	AnyAction,
+	applyMiddleware,
+	combineReducers,
+	createStore,
+	Dispatch,
+	Middleware,
+	MiddlewareAPI,
+	StoreEnhancer
+} from 'redux';
 
 class Engine {
 
 	private clock   : Clock;
-	private systems : System[];
+	private systems : BaseSystem[];
+	private store   : Redux.Store;
 
-	public addSystem(system: System) : this {
+	public addSystem(system: BaseSystem) : this {
 		this.getSystems().push(system);
+
+		system.setStore(this.getStore());
+
+		if (system.isSubjectToClockUpdates()) {
+			this.getClock().addSystem(system);
+		}
+
 		return this;
 	}
 
@@ -25,6 +47,14 @@ class Engine {
 
 	public stop() : void {
 		this.getClock().stop();
+	}
+
+	private handleAction(action: BaseAction) : void {
+		console.log(this.getStore().getState());
+
+		this.getSystems().forEach(system => {
+			system.handleAction(action);
+		});
 	}
 
 	private getClock() : Clock {
@@ -41,12 +71,41 @@ class Engine {
 		return clock;
 	}
 
-	private getSystems() : System[] {
+	private getSystems() : BaseSystem[] {
 		if (!this.systems) {
 			this.systems = [ ];
 		}
 
 		return this.systems;
+	}
+
+	private getStore() : Redux.Store {
+		if (!this.store) {
+			this.store = this.createStore();
+		}
+
+		return this.store;
+	}
+
+	private createStore() : Redux.Store {
+		return createStore(
+			Reducers,
+			this.createMiddleware()
+		);
+	}
+
+	private createMiddleware() : StoreEnhancer {
+		return applyMiddleware(this.getMiddleware());
+	}
+
+	private getMiddleware() : Middleware {
+		return (store: MiddlewareAPI<any>) => (next: Dispatch<AnyAction>) => {
+			return (action: AnyAction) : void => {
+				next(action);
+
+				this.handleAction(action);
+			};
+		};
 	}
 
 }
