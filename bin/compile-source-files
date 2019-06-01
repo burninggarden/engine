@@ -24,6 +24,6 @@ fi
 echo "Recompiling..."
 rm -rf dist/src
 rm -rf dist/test
-tsc
+tsc --declaration
 ./bin/remap-paths
 echo $(date +%s) > dist/.last-compile-time
