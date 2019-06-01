@@ -1,7 +1,7 @@
 {
 	"name": "@burninggarden/engine",
 	"description": "Core game runtime engine",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"private": false,
 	"author": "Burning Garden",
 	"homepage": "https://burninggarden.com",
