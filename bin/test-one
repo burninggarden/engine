@@ -23,7 +23,7 @@ else
 fi
 
 if [ -a "dist/$TEST_FILEPATH" ]; then
-  NODE_ENV=test ./node_modules/.bin/tap dist/$TEST_FILEPATH --reporter spec --timeout 5
+  NODE_ENV=test tap dist/$TEST_FILEPATH --reporter spec --timeout 5
 else
   echo ""
   echo -e "${RED}[ERROR]${RESET} No test file(s) found matching '$1'"
