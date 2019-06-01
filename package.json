@@ -6,6 +6,7 @@
 	"author": "Burning Garden",
 	"homepage": "https://burninggarden.com",
 	"repository": "https://github.com/burninggarden/engine",
+	"main": "./dist/src/index.js",
 	"dependencies": {
 		"@types/node": "10.9.4",
 		"faker": "4.1.0",
