@@ -8,6 +8,7 @@
 	"repository": "https://github.com/burninggarden/engine",
 	"dependencies": {
 		"@types/node": "10.9.4",
+		"faker": "4.1.0",
 		"redux": "4.0.1",
 		"tap": "^12.6.1",
 		"typescript": "3.2.1"
@@ -16,7 +17,6 @@
 		"@typescript-eslint/eslint-plugin": "^1.5.0",
 		"@typescript-eslint/parser": "^1.5.0",
 		"eslint": "^5.15.3",
-		"faker": "4.1.0",
 		"tap": "12.5.1",
 		"typescript": "3.0.3",
 		"@types/node": "10.9.4"
