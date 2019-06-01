@@ -1,9 +1,8 @@
 import Tap                    from 'tap';
 import ActionType             from 'enums/action-type';
 import TileFactory            from 'factories/tile';
-import EntityFactory          from 'factories/entity';
-import PositionFactory        from 'factories/position';
 import TilesReducer           from 'reducers/tiles';
+import EntityFactory          from 'factories/entity';
 import AddTileActionCreator   from 'action-creators/add-tile';
 import AddEntityActionCreator from 'action-creators/add-entity';
 

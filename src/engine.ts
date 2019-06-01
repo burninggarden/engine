@@ -15,7 +15,6 @@ import BaseAction from 'actions/base';
 import {
 	AnyAction,
 	applyMiddleware,
-	combineReducers,
 	createStore,
 	Dispatch,
 	Middleware,

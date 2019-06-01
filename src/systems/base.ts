@@ -51,7 +51,7 @@ abstract class BaseSystem {
 		return this.getTimeSinceLastTick() > this.getClockUpdateRate();
 	}
 
-	private getTimeSinceLastTick() {
+	private getTimeSinceLastTick() : number {
 		return this.elapsed_milliseconds - this.last_clock_update_time;
 	}
 

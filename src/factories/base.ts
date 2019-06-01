@@ -17,8 +17,6 @@ abstract class BaseFactory<T> {
 		return results;
 	}
 
-	public abstract createInstance(attributes?: Partial<T>): T;
-
 	private getMinimumNumberOfInstances() : number {
 		return 0;
 	}
@@ -26,6 +24,9 @@ abstract class BaseFactory<T> {
 	private getMaximumNumberOfInstances() : number {
 		return 10;
 	}
+
+	public abstract createInstance(attributes?: Partial<T>): T;
+
 }
 
 export default BaseFactory;

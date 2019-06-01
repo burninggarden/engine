@@ -51,6 +51,22 @@ Tap.test('.stop() cancels a queued clock update', test => {
 });
 
 Tap.test('calls tick() for each registered system', test => {
+	class MockClock extends Clock {
+
+		public constructor() {
+			super();
+
+			Object.assign(this, {
+				getMillisecondsSinceLastTick() : number {
+					return 123;
+				}
+			});
+		}
+
+	}
+
+	const clock = new MockClock();
+
 	class MockSystem extends BaseSystem {
 
 		public handleAction(action: BaseAction) : void {
@@ -67,21 +83,6 @@ Tap.test('calls tick() for each registered system', test => {
 			throw new Error('Not implemented');
 		}
 	}
-
-	class MockClock extends Clock {
-
-		constructor() {
-			super();
-
-			Object.assign(this, {
-				getMillisecondsSinceLastTick() : number {
-					return 123;
-				}
-			});
-		}
-	}
-
-	const clock = new MockClock();
 
 	clock.addSystem(new MockSystem());
 	clock.start();
