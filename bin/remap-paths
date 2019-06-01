@@ -4,6 +4,7 @@ const FS = require('fs');
 const Path = require('path');
 
 const JAVASCRIPT_EXTENSION = '.js';
+const DECLARATION_EXTENSION = '.d.ts';
 const UTF8_ENCODING = 'utf8';
 const DIST_PATH = Path.resolve(__dirname, '../dist');
 
@@ -23,12 +24,14 @@ function processDirectory(directoryPath) {
 		if (!parsedPath.ext) {
 			processDirectory(childPath);
 		} else if (parsedPath.ext === JAVASCRIPT_EXTENSION) {
-			processFile(childPath);
+			processSourceFile(childPath);
+		} else if (childPath.slice(-5) === DECLARATION_EXTENSION) {
+			processDeclarationFile(childPath);
 		}
 	});
 }
 
-function processFile(filePath) {
+function processSourceFile(filePath) {
 	const contents = FS.readFileSync(filePath, UTF8_ENCODING);
 
 	const lines = contents.split('\n').map(function map(line) {
@@ -63,4 +66,39 @@ function processFile(filePath) {
 	FS.writeFileSync(filePath, lines.join('\n'), UTF8_ENCODING);
 }
 
-processDirectory('./dist');
+function processDeclarationFile(filePath) {
+	const contents = FS.readFileSync(filePath, UTF8_ENCODING);
+
+	const lines = contents.split('\n').map(function map(line) {
+		return line.replace(/from '([^']+)/g, function replacer(match, path) {
+			if (path[0] === '.') {
+				return match;
+			}
+
+			const dependencyPath = DIST_PATH + '/src/' + path + '.d.ts';
+
+			if (!FS.existsSync(dependencyPath)) {
+				return match;
+			}
+
+			const parsedFile = Path.parse(filePath);
+			const parsedDependency = Path.parse(dependencyPath);
+
+			let relativeDirectory = Path.relative(parsedFile.dir, parsedDependency.dir);
+
+			if (relativeDirectory === '') {
+				relativeDirectory = '.';
+			} else {
+				relativeDirectory = './' + relativeDirectory;
+			}
+
+			const relativePath = relativeDirectory + '/' + parsedDependency.base;
+
+			return "from '" + relativePath;
+		});
+	});
+
+	FS.writeFileSync(filePath, lines.join('\n'), UTF8_ENCODING);
+}
+
+processDirectory('./dist', 0);
