@@ -92,7 +92,9 @@ function processDeclarationFile(filePath) {
 				relativeDirectory = './' + relativeDirectory;
 			}
 
-			const relativePath = relativeDirectory + '/' + parsedDependency.base;
+			let relativePath = relativeDirectory + '/' + parsedDependency.base;
+
+			relativePath = relativePath.replace(DECLARATION_EXTENSION, '');
 
 			return "from '" + relativePath;
 		});
