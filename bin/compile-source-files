@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
+# DON'T MODIFY THIS FILE DIRECTLY!
+# It was added automatically to this project via `botanist init`.
+# If you want to make a change or fix broken behavior in this file,
+# you should do so upstream in https://github.com/burninggarden/botanist.
 
-mkdir -p dist
+set -e
 
 if [[ $1 == '--verify' ]]; then
 	if [ ! -f dist/.last-compile-time ]; then
 		exit 1
 	fi
 
-	typeset -i LAST_MODIFICATION_TIME=$(find src test -type f -print0 | xargs -0 stat -f "%m %N" |
-		sort -rn | head -1 | awk '{ print $1 }')
+	typeset -i LAST_MODIFICATION_TIME=$(find src test -type f -print0 |
+		xargs -0 stat --format "%X %N" |
+		sort -rn |
+		head -1 |
+		awk '{ print $1 }')
 
 	typeset -i LAST_COMPILE_TIME=$(cat dist/.last-compile-time)
 
@@ -21,9 +27,13 @@ if [[ $1 == '--verify' ]]; then
 	exit 0
 fi
 
+if [[ -f ./dist/.last-publish-time ]]; then
+	exit 0
+fi
+
 echo "Recompiling..."
 rm -rf dist/src
 rm -rf dist/test
-tsc --declaration
+./node_modules/.bin/tsc --declaration
 ./bin/remap-paths
 echo $(date +%s) > dist/.last-compile-time

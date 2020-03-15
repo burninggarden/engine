@@ -7,4 +7,6 @@
 
 set -e
 
-./bin/compile-source-files
+git push
+git push --tags
+npm publish

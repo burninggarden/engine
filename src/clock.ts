@@ -1,15 +1,16 @@
-import BaseSystem from 'systems/base';
+import System from 'system';
 
 class Clock {
 
 	private running        : boolean = false;
 	private last_tick_time : number = 0;
-	private timer          : null | number | NodeJS.Timer;
-	private systems        : BaseSystem[];
+	private timer          : NodeJS.Timer | undefined;
+	private systems        : System[];
 	private tick_rate      : number = 10;
 
 	public constructor() {
 		this.tick = this.tick.bind(this);
+		this.systems = [];
 	}
 
 	public start() : void {
@@ -30,7 +31,7 @@ class Clock {
 		this.cancelNextTick();
 	}
 
-	public addSystem(system: BaseSystem) : void {
+	public addSystem(system: System) : void {
 		return void this.getSystems().push(system);
 	}
 
@@ -78,14 +79,12 @@ class Clock {
 	}
 
 	private cancelNextTick() : void {
-		clearTimeout(this.timer as number);
+		if (this.timer !== undefined) {
+			clearTimeout(this.timer);
+		}
 	}
 
-	private getSystems() : BaseSystem[] {
-		if (!this.systems) {
-			this.systems = [ ];
-		}
-
+	private getSystems() : System[] {
 		return this.systems;
 	}
 

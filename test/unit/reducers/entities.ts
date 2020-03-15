@@ -1,4 +1,3 @@
-import Tap                            from 'tap';
 import ActionType                     from 'enums/action-type';
 import TileFactory                    from 'factories/tile';
 import EntityFactory                  from 'factories/entity';
@@ -8,61 +7,57 @@ import AddTileActionCreator           from 'action-creators/add-tile';
 import AddEntityActionCreator         from 'action-creators/add-entity';
 import SetEntityPositionActionCreator from 'action-creators/set-entity-position';
 
-Tap.test('returns an empty array by default', test => {
-	const result = EntitiesReducer(undefined, {
-		type: ActionType.ADD_ENTITY
+describe('EntitiesReducer', () => {
+	it('returns an empty array by default', () => {
+		const result = EntitiesReducer(undefined, {
+			type: ActionType.ADD_ENTITY
+		});
+
+		expect(result).toEqual([]);
 	});
 
-	test.deepEqual(result, []);
-	test.end();
-});
+	it('handles AddEntityAction', () => {
+		const entity = EntityFactory.createInstance();
 
-Tap.test('handles AddEntityAction', test => {
-	const entity = EntityFactory.createInstance();
+		const action = (new AddEntityActionCreator(entity))
+			.createAction();
 
-	const action = (new AddEntityActionCreator(entity))
-		.createAction();
+		const result = EntitiesReducer([], action);
 
-	const result = EntitiesReducer([], action);
-
-	test.deepEqual(result, [entity]);
-	test.end();
-});
-
-Tap.test('handles SetEntityPositionAction', test => {
-	const position = PositionFactory.createInstance();
-
-	const entity = EntityFactory.createInstance({
-		position
+		expect(result).toEqual([entity]);
 	});
 
-	const action = (new SetEntityPositionActionCreator(entity.id, position))
-		.createAction();
+	it('handles SetEntityPositionAction', () => {
+		const position = PositionFactory.createInstance();
 
-	const result = EntitiesReducer([entity], action);
-
-	test.deepEqual(result, [
-		{
-			...entity,
+		const entity = EntityFactory.createInstance({
 			position
-		}
-	]);
+		});
 
-	test.end();
-});
+		const action = (new SetEntityPositionActionCreator(entity.id, position))
+			.createAction();
 
-Tap.test('returns supplied array when given an unmapped action type', test => {
-	const entity = EntityFactory.createInstance();
-	const tile = TileFactory.createInstance();
+		const result = EntitiesReducer([entity], action);
 
-	const action = (new AddTileActionCreator(tile))
-		.createAction();
+		expect(result).toEqual([
+			{
+				...entity,
+				position
+			}
+		]);
+	});
 
-	const result = EntitiesReducer([entity], action);
+	it('returns supplied array when given an unmapped action type', () => {
+		const entity = EntityFactory.createInstance();
+		const tile = TileFactory.createInstance();
 
-	test.deepEqual(result, [
-		entity
-	]);
+		const action = (new AddTileActionCreator(tile))
+			.createAction();
 
-	test.end();
+		const result = EntitiesReducer([entity], action);
+
+		expect(result).toEqual([
+			entity
+		]);
+	});
 });

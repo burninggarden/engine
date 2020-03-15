@@ -1,123 +1,134 @@
-import Tap                    from 'tap';
+import PromiseWrapper         from '@burninggarden/promise-wrapper';
 import Engine                 from 'engine';
-import BaseSystem             from 'systems/base';
+import System                 from 'system';
 import BaseAction             from 'actions/base';
 import EntityFactory          from 'factories/entity';
 import AddEntityActionCreator from 'action-creators/add-entity';
 
-Tap.test('.start() queues a clock update for systems subject to them', test => {
-	const engine = new Engine();
+describe('Engine', () => {
+	describe('start()',  () => {
+		it('queues a clock update for systems subject to them', async () => {
+			const promiseWrapper = new PromiseWrapper();
+			const engine = new Engine();
 
-	class MockSystem extends BaseSystem {
+			class MockSystem extends System {
 
-		public handleAction(action: BaseAction) : void {
-			throw new Error('Not implemented');
-		}
+				public handleAction(action: BaseAction) : void {
+					throw new Error('Not implemented');
+				}
 
-		protected performClockUpdate(): void {
-			test.ok('Received expected update');
+				protected performClockUpdate(): void {
+					engine.stop();
+					promiseWrapper.resolve();
+				}
+
+			}
+
+			engine.addSystem(new MockSystem());
+			engine.start();
+
+			await promiseWrapper.getPromise();
+		});
+
+		it('does not queue a clock update for systems that are not subject to them', () => {
+			const engine = new Engine();
+
+			class MockSystem extends System {
+
+				public isSubjectToClockUpdates() : boolean {
+					return false;
+				}
+
+				public handleAction(action: BaseAction) : void {
+					throw new Error('Not implemented');
+				}
+
+				protected performClockUpdate(): void {
+					throw new Error('Received unexpected update');
+				}
+
+			}
+
+			engine.addSystem(new MockSystem());
+			engine.start();
 			engine.stop();
-			test.end();
+		});
+	});
+
+	describe('stop()', () => {
+		it('cancels a queued clock update', async () => {
+			const promiseWrapper = new PromiseWrapper();
+			const engine = new Engine();
+
+			class MockSystem extends System {
+
+				public handleAction(action: BaseAction) : void {
+					throw new Error('Not implemented');
+				}
+
+				protected performClockUpdate(): void {
+					throw new Error('Received unexpected update');
+				}
+
+			}
+
+			engine.addSystem(new MockSystem());
+			engine.start();
+			engine.stop();
+
+			setTimeout(() => {
+				promiseWrapper.resolve();
+			}, 20);
+
+			await promiseWrapper.getPromise();
+		});
+	});
+
+	it('Forwards dispatched actions to all connected systems in the order they were added', async () => {
+		const promiseWrapper = new PromiseWrapper();
+		const engine = new Engine();
+
+		const entity = EntityFactory.createInstance();
+		const expected_action = new AddEntityActionCreator(entity).createAction();
+
+		class SystemA extends System {
+
+			public handleAction(action: BaseAction) : void {
+				expect(action).toEqual(expected_action);
+			}
+
+			protected performClockUpdate(): void {
+				throw new Error('Received unexpected clock update');
+			}
+
 		}
 
-	}
+		class SystemB extends System {
 
-	engine.addSystem(new MockSystem());
-	engine.start();
-});
+			public publicDispatch(action: BaseAction) : void {
+				this.dispatchAction(action);
+			}
 
-Tap.test('.start() does not queue a clock update for systems that are not subject to them', test => {
-	const engine = new Engine();
+			public handleAction(action: BaseAction) : void {
+				expect(action).toEqual(expected_action);
 
-	class MockSystem extends BaseSystem {
+				promiseWrapper.resolve();
+			}
 
-		public isSubjectToClockUpdates() : boolean {
-			return false;
+			protected performClockUpdate(): void {
+				throw new Error('Received unexpected clock update');
+			}
+
 		}
 
-		public handleAction(action: BaseAction) : void {
-			throw new Error('Not implemented');
-		}
+		const system_a = new SystemA();
+		const system_b = new SystemB();
 
-		protected performClockUpdate(): void {
-			throw new Error('Received unexpected update');
-		}
+		engine.addSystem(system_a);
+		engine.addSystem(system_b);
 
-	}
+		system_b.publicDispatch(expected_action);
 
-	engine.addSystem(new MockSystem());
-	engine.start();
-	test.ok('No updates were triggered');
-	engine.stop();
-	test.end();
-});
-
-Tap.test('.stop() cancels a queued clock update', test => {
-	const engine = new Engine();
-
-	class MockSystem extends BaseSystem {
-
-		public handleAction(action: BaseAction) : void {
-			throw new Error('Not implemented');
-		}
-
-		protected performClockUpdate(): void {
-			test.notOk('Received unexpected update');
-			test.end();
-		}
-
-	}
-
-	engine.addSystem(new MockSystem());
-	engine.start();
-	engine.stop();
-
-	setTimeout(() => {
-		test.ok('Did not receive clock update');
-		test.end();
-	}, 20);
-});
-
-Tap.test('Forwards dispatched actions to all connected systems in the order they were added', test => {
-	const engine = new Engine();
-
-	const entity = EntityFactory.createInstance();
-	const expected_action = new AddEntityActionCreator(entity).createAction();
-
-	class SystemA extends BaseSystem {
-
-		public handleAction(action: BaseAction) : void {
-			test.deepEqual(action, expected_action);
-		}
-
-		protected performClockUpdate(): void {
-			throw new Error('Received unexpected clock update');
-		}
-
-	}
-
-	class SystemB extends BaseSystem {
-
-		public publicDispatch(action: BaseAction) : void {
-			this.dispatchAction(action);
-		}
-
-		public handleAction(action: BaseAction) : void {
-			test.deepEqual(action, expected_action);
-			test.end();
-		}
-
-		protected performClockUpdate(): void {
-			throw new Error('Received unexpected clock update');
-		}
-
-	}
-
-	const system_a = new SystemA();
-	const system_b = new SystemB();
-
-	engine.addSystem(system_a);
-	engine.addSystem(system_b);
-
-	system_b.publicDispatch(expected_action);
+		await promiseWrapper.getPromise();
+	});
 });

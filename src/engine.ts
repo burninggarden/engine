@@ -8,8 +8,8 @@
 
 import Clock      from 'clock';
 import Redux      from 'redux';
+import System     from 'system';
 import Reducers   from 'reducers';
-import BaseSystem from 'systems/base';
 import BaseAction from 'actions/base';
 
 import {
@@ -25,10 +25,15 @@ import {
 class Engine {
 
 	private clock   : Clock;
-	private systems : BaseSystem[];
-	private store   : Redux.Store;
+	private systems : System[];
+	private store   : Redux.Store | undefined;
 
-	public addSystem(system: BaseSystem) : this {
+	public constructor() {
+		this.clock = new Clock();
+		this.systems = [];
+	}
+
+	public addSystem(system: System) : this {
 		this.getSystems().push(system);
 
 		system.setStore(this.getStore());
@@ -55,24 +60,10 @@ class Engine {
 	}
 
 	private getClock() : Clock {
-		if (!this.clock) {
-			this.clock = this.createClock();
-		}
-
 		return this.clock;
 	}
 
-	private createClock() : Clock {
-		const clock = new Clock();
-
-		return clock;
-	}
-
-	private getSystems() : BaseSystem[] {
-		if (!this.systems) {
-			this.systems = [ ];
-		}
-
+	private getSystems() : System[] {
 		return this.systems;
 	}
 

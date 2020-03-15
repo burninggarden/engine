@@ -1,27 +1,27 @@
-import Tap               from 'tap';
 import Faker             from 'faker';
 import ActionType        from 'enums/action-type';
 import BaseAction        from 'actions/base';
 import BaseActionCreator from 'action-creators/base';
 
-Tap.test('.createAction() returns the action payload', test => {
-	interface MockAction extends BaseAction {
-		mock_value: string;
-	}
-
-	const expected_action = {
-		type:       ActionType.ADD_ENTITY,
-		mock_value: Faker.random.uuid()
-	};
-
-	class MockActionCreator extends BaseActionCreator {
-		protected getActionPayload() : MockAction {
-			return expected_action;
+describe('BaseActionCreator', () => {
+	it('returns the expected action payload', () => {
+		interface MockAction extends BaseAction {
+			mockValue: string;
 		}
-	}
 
-	const actual_action = (new MockActionCreator()).createAction();
+		const expectedAction = {
+			type:      ActionType.ADD_ENTITY,
+			mockValue: Faker.random.uuid()
+		};
 
-	test.deepEqual(actual_action, expected_action);
-	test.end();
+		class MockActionCreator extends BaseActionCreator {
+			protected getActionPayload() : MockAction {
+				return expectedAction;
+			}
+		}
+
+		const actualAction = (new MockActionCreator()).createAction();
+
+		expect(actualAction).toEqual(expectedAction);
+	});
 });

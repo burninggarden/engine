@@ -1,13 +1,13 @@
-import Redux         from 'redux';
-import State         from 'types/state';
-import BaseAction    from 'actions/base';
-import TimeIntervals from 'constants/time-intervals';
+import {TimeInterval} from '@burninggarden/enums';
+import Redux          from 'redux';
+import State          from 'types/state';
+import BaseAction     from 'actions/base';
 
-abstract class BaseSystem {
+abstract class System {
 
 	private elapsed_milliseconds   : number = 0;
 	private last_clock_update_time : number = 0;
-	private store                  : Redux.Store;
+	private store                  : Redux.Store | undefined;
 
 	public setStore(store: Redux.Store) : this {
 		this.store = store;
@@ -36,10 +36,14 @@ abstract class BaseSystem {
 	}
 
 	protected getClockUpdateRate() : number {
-		return TimeIntervals.ONE_SECOND;
+		return TimeInterval.ONE_SECOND;
 	}
 
 	private getStore() : Redux.Store {
+		if (this.store === undefined) {
+			throw new Error('Tried to read store, but it was not set');
+		}
+
 		return this.store;
 	}
 
@@ -70,4 +74,4 @@ abstract class BaseSystem {
 
 }
 
-export default BaseSystem;
+export default System;
