@@ -1,29 +1,29 @@
-import updateItemInList from 'utilities/update-item-in-list';
+import updateItemInList from "utilities/update-item-in-list";
 
 interface Wizard {
-	id              : string;
-	school_of_magic : string;
+	id: string;
+	schoolOfMagic: string;
 }
 
-describe('updateItemInList', () => {
-	it('updates expected item with supplied attributes', () => {
+describe("updateItemInList", () => {
+	it("updates expected item with supplied attributes", () => {
 		const list: Wizard[] = [
-			{ id: '123', school_of_magic: 'fire' },
-			{ id: '456', school_of_magic: 'water' },
-			{ id: '789', school_of_magic: 'lightning' }
+			{ id: "123", schoolOfMagic: "fire" },
+			{ id: "456", schoolOfMagic: "water" },
+			{ id: "789", schoolOfMagic: "lightning" },
 		];
 
-		const updated_list = updateItemInList(list, '456', (item) => {
+		const updatedList = updateItemInList(list, "456", (item) => {
 			return {
 				...item,
-				school_of_magic: 'fire'
+				schoolOfMagic: "fire",
 			};
 		});
 
-		expect(updated_list).toEqual([
-			{ id: '123', school_of_magic: 'fire' },
-			{ id: '456', school_of_magic: 'fire' },
-			{ id: '789', school_of_magic: 'lightning' }
+		expect(updatedList).toEqual([
+			{ id: "123", schoolOfMagic: "fire" },
+			{ id: "456", schoolOfMagic: "fire" },
+			{ id: "789", schoolOfMagic: "lightning" },
 		]);
 	});
 });

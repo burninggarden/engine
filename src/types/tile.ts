@@ -1,7 +1,6 @@
-
 interface Tile {
-	id         : string;
-	entity_ids : string[];
+	id: string;
+	entityIds: string[];
 }
 
 export default Tile;

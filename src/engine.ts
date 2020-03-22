@@ -6,11 +6,11 @@
  *  - Stallman
  */
 
-import Clock      from 'clock';
-import Redux      from 'redux';
-import System     from 'system';
-import Reducers   from 'reducers';
-import BaseAction from 'actions/base';
+import Clock from "clock";
+import Redux from "redux";
+import System from "system";
+import Reducers from "reducers";
+import BaseAction from "actions/base";
 
 import {
 	AnyAction,
@@ -19,21 +19,20 @@ import {
 	Dispatch,
 	Middleware,
 	MiddlewareAPI,
-	StoreEnhancer
-} from 'redux';
+	StoreEnhancer,
+} from "redux";
 
 class Engine {
-
-	private clock   : Clock;
-	private systems : System[];
-	private store   : Redux.Store | undefined;
+	private clock: Clock;
+	private systems: System[];
+	private store: Redux.Store | undefined;
 
 	public constructor() {
 		this.clock = new Clock();
 		this.systems = [];
 	}
 
-	public addSystem(system: System) : this {
+	public addSystem(system: System): this {
 		this.getSystems().push(system);
 
 		system.setStore(this.getStore());
@@ -45,29 +44,19 @@ class Engine {
 		return this;
 	}
 
-	public start() : void {
+	public dispatchAction(action: BaseAction): void {
+		this.getStore().dispatch(action);
+	}
+
+	public start(): void {
 		this.getClock().start();
 	}
 
-	public stop() : void {
+	public stop(): void {
 		this.getClock().stop();
 	}
 
-	private handleAction(action: BaseAction) : void {
-		this.getSystems().forEach(system => {
-			system.handleAction(action);
-		});
-	}
-
-	private getClock() : Clock {
-		return this.clock;
-	}
-
-	private getSystems() : System[] {
-		return this.systems;
-	}
-
-	private getStore() : Redux.Store {
+	public getStore(): Redux.Store {
 		if (!this.store) {
 			this.store = this.createStore();
 		}
@@ -75,27 +64,37 @@ class Engine {
 		return this.store;
 	}
 
-	private createStore() : Redux.Store {
-		return createStore(
-			Reducers,
-			this.createMiddleware()
-		);
+	private handleAction(action: BaseAction): void {
+		this.getSystems().forEach((system) => {
+			system.handleAction(action);
+		});
 	}
 
-	private createMiddleware() : StoreEnhancer {
+	private getClock(): Clock {
+		return this.clock;
+	}
+
+	private getSystems(): System[] {
+		return this.systems;
+	}
+
+	private createStore(): Redux.Store {
+		return createStore(Reducers, this.createMiddleware());
+	}
+
+	private createMiddleware(): StoreEnhancer {
 		return applyMiddleware(this.getMiddleware());
 	}
 
-	private getMiddleware() : Middleware {
+	private getMiddleware(): Middleware {
 		return (store: MiddlewareAPI<any>) => (next: Dispatch<AnyAction>) => {
-			return (action: AnyAction) : void => {
+			return (action: AnyAction): void => {
 				next(action);
 
 				this.handleAction(action);
 			};
 		};
 	}
-
 }
 
 export default Engine;

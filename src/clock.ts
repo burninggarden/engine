@@ -1,19 +1,18 @@
-import System from 'system';
+import System from "system";
 
 class Clock {
-
-	private running        : boolean = false;
-	private last_tick_time : number = 0;
-	private timer          : NodeJS.Timer | undefined;
-	private systems        : System[];
-	private tick_rate      : number = 10;
+	private running: boolean = false;
+	private lastTickTime: number = 0;
+	private timer: NodeJS.Timer | undefined;
+	private systems: System[];
+	private tickRate: number = 10;
 
 	public constructor() {
 		this.tick = this.tick.bind(this);
 		this.systems = [];
 	}
 
-	public start() : void {
+	public start(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -22,7 +21,7 @@ class Clock {
 		this.queueNextTick();
 	}
 
-	public stop() : void {
+	public stop(): void {
 		if (this.isStopped()) {
 			return;
 		}
@@ -31,19 +30,19 @@ class Clock {
 		this.cancelNextTick();
 	}
 
-	public addSystem(system: System) : void {
+	public addSystem(system: System): void {
 		return void this.getSystems().push(system);
 	}
 
-	private isRunning() : boolean {
+	private isRunning(): boolean {
 		return this.running === true;
 	}
 
-	private isStopped() : boolean {
+	private isStopped(): boolean {
 		return !this.isRunning();
 	}
 
-	private tick() : void {
+	private tick(): void {
 		const milliseconds = this.getMillisecondsSinceLastTick();
 
 		this.getSystems().forEach((system) => {
@@ -54,40 +53,39 @@ class Clock {
 		this.queueNextTick();
 	}
 
-	private getMillisecondsSinceLastTick() : number {
+	private getMillisecondsSinceLastTick(): number {
 		return Date.now() - this.getLastTickTime();
 	}
 
-	private getLastTickTime() : number {
-		if (!this.last_tick_time) {
-			this.last_tick_time = Date.now();
+	private getLastTickTime(): number {
+		if (!this.lastTickTime) {
+			this.lastTickTime = Date.now();
 		}
 
-		return this.last_tick_time;
+		return this.lastTickTime;
 	}
 
-	private setLastTickTime(last_tick_time: number) : this {
-		this.last_tick_time = last_tick_time;
+	private setLastTickTime(lastTickTime: number): this {
+		this.lastTickTime = lastTickTime;
 		return this;
 	}
 
-	private queueNextTick() : void {
+	private queueNextTick(): void {
 		if (this.isRunning()) {
 			this.cancelNextTick();
-			this.timer = setTimeout(this.tick, this.tick_rate);
+			this.timer = setTimeout(this.tick, this.tickRate);
 		}
 	}
 
-	private cancelNextTick() : void {
+	private cancelNextTick(): void {
 		if (this.timer !== undefined) {
 			clearTimeout(this.timer);
 		}
 	}
 
-	private getSystems() : System[] {
+	private getSystems(): System[] {
 		return this.systems;
 	}
-
 }
 
 export default Clock;

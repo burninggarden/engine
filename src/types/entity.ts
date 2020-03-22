@@ -1,8 +1,8 @@
-import Position from 'types/position';
+import Position from "types/position";
 
 interface Entity {
-	id       : string;
-	position : Position;
+	id: string;
+	position: Position;
 }
 
 export default Entity;

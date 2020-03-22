@@ -1,25 +1,23 @@
-import PromiseWrapper from '@burninggarden/promise-wrapper';
-import Clock          from 'clock';
-import System         from 'system';
-import BaseAction     from 'actions/base';
+import PromiseWrapper from "@burninggarden/promise-wrapper";
+import Clock from "clock";
+import System from "system";
+import BaseAction from "actions/base";
 
-describe('Clock', () => {
-	describe('start()', () => {
-		it('.start() queues a clock update', async () => {
+describe("Clock", () => {
+	describe("start()", () => {
+		it(".start() queues a clock update", async () => {
 			const promiseWrapper = new PromiseWrapper();
 			const clock = new Clock();
 
 			class MockSystem extends System {
-
-				public handleAction(action: BaseAction) : void {
-					throw new Error('Not implemented');
+				public handleAction(action: BaseAction): void {
+					throw new Error("Not implemented");
 				}
 
 				protected performClockUpdate(): void {
 					clock.stop();
 					promiseWrapper.resolve();
 				}
-
 			}
 
 			clock.addSystem(new MockSystem());
@@ -29,21 +27,19 @@ describe('Clock', () => {
 		});
 	});
 
-	describe('stop()', () => {
-		it('cancels a queued clock update', async () => {
+	describe("stop()", () => {
+		it("cancels a queued clock update", async () => {
 			const promiseWrapper = new PromiseWrapper();
 			const clock = new Clock();
 
 			class MockSystem extends System {
-
-				public handleAction(action: BaseAction) : void {
-					throw new Error('Not implemented');
+				public handleAction(action: BaseAction): void {
+					throw new Error("Not implemented");
 				}
 
 				protected performClockUpdate(): void {
-					throw new Error('Received unexpected update');
+					throw new Error("Received unexpected update");
 				}
-
 			}
 
 			clock.addSystem(new MockSystem());
@@ -58,39 +54,36 @@ describe('Clock', () => {
 		});
 	});
 
-	it('calls tick() for each registered system', async () => {
+	it("calls tick() for each registered system", async () => {
 		const promiseWrapper = new PromiseWrapper();
 
 		class MockClock extends Clock {
-
 			public constructor() {
 				super();
 
 				Object.assign(this, {
-					getMillisecondsSinceLastTick() : number {
+					getMillisecondsSinceLastTick(): number {
 						return 123;
-					}
+					},
 				});
 			}
-
 		}
 
 		const clock = new MockClock();
 
 		class MockSystem extends System {
-
-			public handleAction(action: BaseAction) : void {
-				throw new Error('Not implemented');
+			public handleAction(action: BaseAction): void {
+				throw new Error("Not implemented");
 			}
 
-			public tick(elapsed_milliseconds: number): void {
-				expect(elapsed_milliseconds).toStrictEqual(123);
+			public tick(elapsedMilliseconds: number): void {
+				expect(elapsedMilliseconds).toStrictEqual(123);
 				clock.stop();
 				promiseWrapper.resolve();
 			}
 
-			protected performClockUpdate() : void {
-				throw new Error('Not implemented');
+			protected performClockUpdate(): void {
+				throw new Error("Not implemented");
 			}
 		}
 

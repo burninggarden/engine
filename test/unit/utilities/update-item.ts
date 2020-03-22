@@ -1,24 +1,24 @@
-import updateItem from 'utilities/update-item';
+import updateItem from "utilities/update-item";
 
 interface Wizard {
-	familiar        : string;
-	school_of_magic : string;
+	familiar: string;
+	schoolOfMagic: string;
 }
 
-describe('updateItem', () => {
-	it('returns item with expected attributes', () => {
+describe("updateItem", () => {
+	it("returns item with expected attributes", () => {
 		const wizard: Wizard = {
-			familiar:        'owl',
-			school_of_magic: 'fire'
+			familiar: "owl",
+			schoolOfMagic: "fire",
 		};
 
-		const updated_wizard = updateItem(wizard, {
-			school_of_magic: 'ice'
+		const updatedWizard = updateItem(wizard, {
+			schoolOfMagic: "ice",
 		});
 
-		expect(updated_wizard).toEqual({
-			familiar:        'owl',
-			school_of_magic: 'ice'
+		expect(updatedWizard).toEqual({
+			familiar: "owl",
+			schoolOfMagic: "ice",
 		});
 	});
 });

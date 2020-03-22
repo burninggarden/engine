@@ -1,13 +1,11 @@
-import BaseAction from 'actions/base';
+import BaseAction from "actions/base";
 
 abstract class BaseActionCreator {
-
-	public createAction() : BaseAction {
+	public createAction(): BaseAction {
 		return this.getActionPayload();
 	}
 
-	protected abstract getActionPayload() : BaseAction;
-
+	protected abstract getActionPayload(): BaseAction;
 }
 
 export default BaseActionCreator;

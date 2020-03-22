@@ -1,6 +1,5 @@
-import Entity from 'types/entity';
+import Entity from "types/entity";
 
-interface Effect extends Entity {
-}
+interface Effect extends Entity {}
 
 export default Effect;
